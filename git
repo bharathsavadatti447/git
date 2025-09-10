@@ -1,0 +1,20 @@
+commands for git
+git init
+git status
+git add <file_name>
+git commit -m "<Message>"
+git tag "<Tag_name>"
+git branch
+git branch <Branch_Name>
+git checkout <Branch_Name>
+git checkout -b <Branch Name>
+git log
+git log -2
+git log --oneline
+git merge <Branch_Name>
+git cherry-pick <commit_ID>
+git revert <commit_ID>
+git reset --hard Head~1
+git commit --amend <commit_ID>
+git diff <commit_ID_1> <commit_ID_2>
+git show <commit_ID>
