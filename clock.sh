@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "Current running time is ..."
+echo "The Current Running time is ..."
