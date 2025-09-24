@@ -1,5 +1,5 @@
 #!/bin/bash
-for i in "$@"
+for i in 2 4 5 7 9 6
 do
     num=$i
     fact=1
