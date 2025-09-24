@@ -1,7 +1,7 @@
 pipeline {
     agent any
     stages {
-        stage('Checkout') {
+        stage('clone') {
             steps {
                 git branch: 'master',
                     url: 'https://github.com/bharathsavadatti447/git.git'
