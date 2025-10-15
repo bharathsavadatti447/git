@@ -32,6 +32,12 @@ pipeline {
                 '''
             }
         }
+        stage('Checkout') {
+    steps {
+        git branch: "${BRANCH}", url: "${GIT_REPO}"
+        }
+     }
+
         stage('Lint') {
             steps {
                 echo 'Running lint checks on main.c...'
