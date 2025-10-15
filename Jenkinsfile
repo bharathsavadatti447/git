@@ -35,7 +35,7 @@ pipeline {
                         sudo apt install -y build-essential || true
                     fi
 
-                    # Create virtual environment if not exists
+                    # Create virtual environment if it doesn't exist
                     if [ ! -d "venv" ]; then
                         python3 -m venv venv
                     fi
@@ -51,6 +51,7 @@ pipeline {
                 echo 'Running lint checks on main.c...'
                 sh '''
                     #!/bin/bash
+                    set -e
                     if [ -f src/main.c ]; then
                         source venv/bin/activate
                         cmakelint src/main.c > lint_report.txt
@@ -72,6 +73,7 @@ pipeline {
                 echo 'Running build.sh...'
                 sh '''
                     #!/bin/bash
+                    set -e
                     if [ -f build.sh ]; then
                         dos2unix build.sh
                         chmod +x build.sh
