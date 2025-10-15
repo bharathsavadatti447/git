@@ -10,45 +10,36 @@ pipeline {
             steps {
                 echo 'Installing required tools...'
                 sh '''
-                    # Update and install Python3/pip3 if missing
-                    if ! command -v python3 &>/dev/null; then
-                        sudo apt update -y
-                        sudo apt install -y python3 python3-venv python3-pip || true
+                    # Update and install Python3, pip, venv if missing
+                    sudo apt update -y
+                    sudo apt install -y python3 python3-venv python3-pip dos2unix cmake build-essential || true
+
+                    # Create virtual environment if not exists
+                    if [ ! -d ${VENV_DIR} ]; then
+                        python3 -m venv ${VENV_DIR}
                     fi
 
-                    # Create and activate virtual environment
-                    python3 -m venv ${VENV_DIR}
-                    source ${VENV_DIR}/bin/activate
-                    pip install --upgrade pip
-                    pip install cmakelint
-
-                    # Install dos2unix if missing
-                    if ! command -v dos2unix &>/dev/null; then
-                        sudo apt install -y dos2unix || true
-                    fi
-
-                    # Install cmake if missing
-                    if ! command -v cmake &>/dev/null; then
-                        sudo apt install -y cmake || true
-                    fi
-
-                    # Install GCC/G++ compilers if missing
-                    if ! command -v gcc &>/dev/null; then
-                        sudo apt install -y build-essential || true
-                    fi
+                    # Upgrade pip and install cmakelint in venv
+                    ${VENV_DIR}/bin/pip install --upgrade pip
+                    ${VENV_DIR}/bin/pip install cmakelint
                 '''
             }
         }
+
+        stage('Checkout') {
+            steps {
+                git branch: "${BRANCH}", url: "${GIT_REPO}"
+            }
+        }
+
         stage('Lint') {
             steps {
-                echo 'Running lint checks on main.c...'
+                echo 'Running lint checks on src/main.c...'
                 sh '''
-                    # Activate virtual environment
-                    source ${VENV_DIR}/bin/activate
-                    
+                    # Run cmakelint using virtual environment directly
                     if [ -f src/main.c ]; then
-                        cmakelint src/main.c > lint_report.txt
-                        # Fail build if lint errors found (uncomment if strict)
+                        ${VENV_DIR}/bin/cmakelint src/main.c > lint_report.txt
+                        # Uncomment to fail build if errors
                         # grep -q "Total Errors: [1-9]" lint_report.txt && exit 1 || true
                     else
                         echo "src/main.c not found!"
