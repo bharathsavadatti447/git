@@ -9,16 +9,16 @@ pipeline {
             steps {
                 echo 'Installing required tools...'
                 sh '''
+                    #!/bin/bash
+                    set -e
+
                     # Update package lists
                     sudo apt update -y
 
-                    # Install Python3 and pip3 if missing
-                    if ! command -v pip3 &>/dev/null; then
-                        sudo apt install -y python3 python3-pip || true
+                    # Install Python3, pip3, and venv if missing
+                    if ! command -v python3 &>/dev/null || ! command -v pip3 &>/dev/null; then
+                        sudo apt install -y python3 python3-pip python3-venv || true
                     fi
-
-                    # Install cmakelint
-                    pip3 install --quiet cmakelint
 
                     # Install dos2unix if missing
                     if ! command -v dos2unix &>/dev/null; then
@@ -30,10 +30,19 @@ pipeline {
                         sudo apt install -y cmake || true
                     fi
 
-                    # Install GCC/G++ compilers for C/C++ build if missing
+                    # Install GCC/G++ compilers if missing
                     if ! command -v gcc &>/dev/null; then
                         sudo apt install -y build-essential || true
                     fi
+
+                    # Create virtual environment if not exists
+                    if [ ! -d "venv" ]; then
+                        python3 -m venv venv
+                    fi
+
+                    # Activate virtual environment and install cmakelint
+                    source venv/bin/activate
+                    pip install --quiet cmakelint
                 '''
             }
         }
@@ -41,10 +50,10 @@ pipeline {
             steps {
                 echo 'Running lint checks on main.c...'
                 sh '''
+                    #!/bin/bash
                     if [ -f src/main.c ]; then
+                        source venv/bin/activate
                         cmakelint src/main.c > lint_report.txt
-                        # Fail build if lint errors found (uncomment if strict)
-                        # grep -q "Total Errors: [1-9]" lint_report.txt && exit 1 || true
                     else
                         echo "main.c not found!"
                         exit 1
@@ -62,6 +71,7 @@ pipeline {
             steps {
                 echo 'Running build.sh...'
                 sh '''
+                    #!/bin/bash
                     if [ -f build.sh ]; then
                         dos2unix build.sh
                         chmod +x build.sh
