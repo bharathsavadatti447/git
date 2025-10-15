@@ -1,7 +1,7 @@
 pipeline {
     agent { label 'Node-Linux' }
     environment {
-        GIT_REPO = 'https://gitlab.com/bharathsavadatti/cmake_project.git'
+        GIT_REPO = 'https://github.com/bharathsavadatti447/cmake_project.git'
         BRANCH = 'main'
     }
     stages {
