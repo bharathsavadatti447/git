@@ -25,6 +25,7 @@ pipeline {
             steps{
                 sh 'pwd'
                 sh 'ls -a'
+                sh 'll'
                 sh 'ps aux --short=-%mem | head -1'
                 sh 'ps aux --short=-%cpu |head -1'
             }
